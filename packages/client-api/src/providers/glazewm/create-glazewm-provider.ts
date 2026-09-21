@@ -25,6 +25,7 @@ import type {
 
 const glazeWmProviderConfigSchema = z.object({
   type: z.literal('glazewm'),
+  port: z.number().optional(),
 });
 
 export function createGlazeWmProvider(
@@ -34,7 +35,13 @@ export function createGlazeWmProvider(
 
   return createBaseProvider(mergedConfig, async queue => {
     const monitors = await getMonitors();
-    const client = new WmClient();
+
+    // Falls back to the port the desktop app resolved for this session, and
+    // then to glazewm-js' own default, which is right on a machine with a
+    // single logged-in user.
+    const client = new WmClient({
+      port: mergedConfig.port ?? window.__ZEBAR_PORTS?.glazewmIpc,
+    });
     let unlistenEvents: null | UnlistenFn = null;
 
     client.onDisconnect(() =>

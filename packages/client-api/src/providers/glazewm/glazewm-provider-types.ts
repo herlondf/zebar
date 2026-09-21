@@ -12,6 +12,16 @@ import type { Provider } from '../create-base-provider';
 
 export interface GlazeWmProviderConfig {
   type: 'glazewm';
+
+  /**
+   * IPC server port of the GlazeWM instance to connect to.
+   *
+   * Defaults to the instance running in this session, which is what you
+   * want unless you are deliberately reaching for another one. Only the
+   * first logged-in user's GlazeWM gets the well-known port, since a port
+   * belongs to the machine rather than the session.
+   */
+  port?: number;
 }
 
 export type GlazeWmProvider = Provider<
