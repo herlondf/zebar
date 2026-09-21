@@ -1,6 +1,5 @@
 // Prevent additional console window on Windows in release mode.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-#![feature(iterator_try_collect)]
 
 use std::{env, path::Path, sync::Arc};
 
@@ -147,7 +146,7 @@ async fn main() -> anyhow::Result<()> {
 fn output_query(app: &tauri::App, args: QueryArgs) -> anyhow::Result<()> {
   match args {
     QueryArgs::Monitors => {
-      let monitors = MonitorState::new(&app.handle());
+      let monitors = MonitorState::new(app.handle());
       cli::print_and_exit(monitors.output_str());
       Ok(())
     }

@@ -1,4 +1,3 @@
-use core::slice::memchr;
 use std::io::{BufRead, BufReader};
 
 use crate::{Buffer, Encoding};
@@ -84,16 +83,9 @@ impl StdoutReader {
 
   /// Finds the position of a line delimiter (\n or \r) within a buffer.
   fn find_delimiter(buffer: &[u8]) -> Option<usize> {
-    // Try to find a newline.
-    if let Some(pos) = memchr::memchr(b'\n', buffer) {
-      return Some(pos);
-    }
-
-    // Try to find a carriage return.
-    if let Some(pos) = memchr::memchr(b'\r', buffer) {
-      return Some(pos);
-    }
-
-    None
+    buffer
+      .iter()
+      .position(|byte| *byte == b'\n')
+      .or_else(|| buffer.iter().position(|byte| *byte == b'\r'))
   }
 }
