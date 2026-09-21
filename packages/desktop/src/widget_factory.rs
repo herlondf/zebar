@@ -405,7 +405,7 @@ impl WidgetFactory {
   fn set_z_order(
     window: &tauri::WebviewWindow,
     z_order: &ZOrder,
-    placement: &WidgetPlacement,
+    _placement: &WidgetPlacement,
   ) -> anyhow::Result<()> {
     // On macOS, the window level must be set above the menu bar or at the
     // bottom-most level to prevent it from being shifted down beneath the
@@ -492,7 +492,7 @@ impl WidgetFactory {
       // not be smaller than the size of the window.
       let window_margin = dock_config
         .window_margin
-        .to_px_scaled(window_length as i32, coords.monitor.scale_factor)
+        .to_px_scaled(window_length, coords.monitor.scale_factor)
         .clamp(-coords.size.height, i32::MAX);
 
       let monitor_length = if edge.is_horizontal() {
@@ -802,7 +802,7 @@ impl WidgetFactory {
 
   /// Relaunches all currently open widgets.
   pub async fn relaunch_all(&self) -> anyhow::Result<()> {
-    let widget_ids =
+    let widget_ids: Vec<String> =
       { self.widget_states.lock().await.keys().cloned().collect() };
 
     self.relaunch_by_ids(&widget_ids).await
@@ -811,7 +811,7 @@ impl WidgetFactory {
   /// Relaunches widgets with the given widget ID's.
   pub async fn relaunch_by_ids(
     &self,
-    widget_ids: &Vec<String>,
+    widget_ids: &[String],
   ) -> anyhow::Result<()> {
     let changed_states = {
       let mut widget_states = self.widget_states.lock().await;

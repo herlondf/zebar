@@ -47,6 +47,10 @@ pub struct MediaControlArgs {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "name", content = "args", rename_all = "snake_case")]
+#[allow(
+  clippy::enum_variant_names,
+  reason = "the prefix is part of the serialized name"
+)]
 pub enum SystrayFunction {
   IconHoverEnter(SystrayIconArgs),
   IconHoverLeave(SystrayIconArgs),

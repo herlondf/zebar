@@ -11,6 +11,7 @@ pub struct OpenMeteoWeather {
   #[serde(rename = "windspeed")]
   pub wind_speed: f32,
   #[serde(rename = "winddirection")]
+  #[allow(dead_code, reason = "mirrors the API payload")]
   pub wind_direction: f32,
   #[serde(rename = "weathercode")]
   pub weather_code: u32,

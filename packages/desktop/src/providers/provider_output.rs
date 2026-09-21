@@ -28,6 +28,10 @@ macro_rules! impl_provider_output {
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
+#[allow(
+  clippy::large_enum_variant,
+  reason = "produced one at a time, never held in bulk"
+)]
 pub enum ProviderOutput {
   #[cfg(windows)]
   Audio(AudioOutput),
