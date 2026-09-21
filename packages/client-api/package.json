@@ -20,7 +20,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
+    "build": "tsup src/index.ts --format esm --dts && pnpm run build:bundle",
+    "build:bundle": "esbuild src/index.ts --bundle --format=esm --target=es2022 --outfile=dist/zebar.js --tsconfig=tsconfig.json",
     "dev": "pnpm build --watch src",
     "dev:local": "pnpm dev",
     "prepublishOnly": "pnpm build"

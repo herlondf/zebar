@@ -46,6 +46,15 @@ reaching GlazeWM from a widget. The changes live on in this fork instead.
   `window.WebSocket` to point `glazewm-js` at the right port, since widgets
   load that library from a CDN and cannot be reached through `client-api`.
   The wrapper is skipped entirely when the port really is 6123.
+- **Client API served locally** (`packages/desktop/src/asset_server.rs`) —
+  widgets can import it from `/__zebar/zebar.js` instead of a CDN, which
+  means they work offline and pick up changes to `packages/client-api`
+  without waiting for an npm release.
+- **GlazeWM provider takes a port**
+  (`packages/client-api/src/providers/glazewm/`) — it defaults to the
+  instance running in this session. A widget importing the client API
+  locally therefore reaches the right GlazeWM with no `window.WebSocket`
+  patching. The patch stays for widgets that still import from a CDN.
 - **Branding** (`packages/desktop/tauri.conf.json`,
   `packages/desktop/installer.wxs`) — renamed to `Zebar Multi-Session` with its
   own bundle identifier, publisher and MSI upgrade code, so it installs

@@ -71,7 +71,7 @@ pub async fn setup_asset_server() -> anyhow::Result<()> {
 
   let rocket = rocket::build()
     .configure(rocket::Config::figment().merge(("port", port)))
-    .mount("/", routes![sw_js, normalize_css, init, serve]);
+    .mount("/", routes![sw_js, client_api, normalize_css, init, serve]);
 
   // Test if the server can start (this doesn't block).
   let rocket = rocket.ignite().await.map_err(|err| {
@@ -182,6 +182,19 @@ impl<'r> Responder<'r, 'static> for SwResponse {
       .sized_body(self.0.len(), Cursor::new(self.0))
       .ok()
   }
+}
+
+/// Serves the client API, so that widgets can import it from the machine
+/// they run on instead of a CDN.
+///
+/// A widget that imports it from here also gets whatever version of Zebar
+/// it is running under, rather than whichever one its import pinned.
+#[get("/__zebar/zebar.js")]
+pub fn client_api() -> (ContentType, &'static str) {
+  (
+    ContentType::JavaScript,
+    include_str!("../../client-api/dist/zebar.js"),
+  )
 }
 
 #[get("/__zebar/normalize.css")]
