@@ -15,7 +15,7 @@
   <Product
     Id="*"
     Name="Zebar"
-    UpgradeCode="570D3DD8-FDBD-5B5C-A519-2FF34BA60B33"
+    UpgradeCode="E92A1CEB-D9C3-4897-B49C-64F16209AD40"
     Language="!(loc.TauriLanguage)"
     Manufacturer="{{manufacturer}}"
     Version="{{version}}"
@@ -68,7 +68,7 @@
 
     <!-- Initialize with previous `InstallDir`. -->
     <Property Id="INSTALLDIR">
-      <RegistrySearch Id="PrevInstallDirReg" Root="HKCU" Key="Software\glzr.io\Zebar" Name="InstallDir" Type="raw" />
+      <RegistrySearch Id="PrevInstallDirReg" Root="HKCU" Key="Software\herlondf\Zebar Multi-Session" Name="InstallDir" Type="raw" />
     </Property>
 
     <UI>
@@ -111,7 +111,7 @@
 
           <RegistryValue
             Root="HKCU"
-            Key="Software\glzr.io\Zebar"
+            Key="Software\herlondf\Zebar Multi-Session"
             Name="Desktop Shortcut"
             Type="integer"
             Value="1"
@@ -121,7 +121,7 @@
       </Directory>
 
       <Directory Id="$(var.PlatformProgramFilesFolder)" Name="PFiles">
-        <Directory Id="Custom_OrgDir" Name="glzr.io">
+        <Directory Id="Custom_OrgDir" Name="herlondf">
           <Directory Id="INSTALLDIR" Name="{{product_name}}" />
         </Directory>
       </Directory>
@@ -133,7 +133,7 @@
 
     <DirectoryRef Id="INSTALLDIR">
       <Component Id="RegistryEntries" Guid="*">
-        <RegistryKey Root="HKCU" Key="Software\glzr.io\Zebar">
+        <RegistryKey Root="HKCU" Key="Software\herlondf\Zebar Multi-Session">
           <RegistryValue Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
         </RegistryKey>
 
@@ -213,7 +213,7 @@
 
         <RegistryValue
           Root="HKCU"
-          Key="Software\glzr.io\Zebar"
+          Key="Software\herlondf\Zebar Multi-Session"
           Name="Uninstaller Shortcut"
           Type="integer"
           Value="1"
@@ -239,7 +239,7 @@
 
         <RegistryValue
           Root="HKCU"
-          Key="Software\glzr.io\Zebar"
+          Key="Software\herlondf\Zebar Multi-Session"
           Name="Start Menu Shortcut"
           Type="integer"
           Value="1"

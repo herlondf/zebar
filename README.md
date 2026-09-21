@@ -1,3 +1,7 @@
+> **This is a modified fork.** `Zebar Multi-Session` adds support for running
+> one Zebar per logged-in Windows user. It is not official Zebar and is not
+> endorsed by the Zebar project. See [MODIFICATIONS.md](MODIFICATIONS.md).
+
 <div align="center">
 
   <br>

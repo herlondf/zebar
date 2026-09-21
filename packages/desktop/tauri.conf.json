@@ -4,9 +4,9 @@
     "devUrl": "http://localhost:4200",
     "frontendDist": "../settings-ui/dist"
   },
-  "productName": "Zebar",
-  "version": "3.3.2",
-  "identifier": "com.glzr.zebar",
+  "productName": "Zebar Multi-Session",
+  "version": "3.3.1",
+  "identifier": "io.github.herlondf.zebar-multisession",
   "bundle": {
     "active": true,
     "icon": [
@@ -16,9 +16,9 @@
       "resources/icons/icon.icns",
       "resources/icons/icon.ico"
     ],
-    "shortDescription": "Zebar",
+    "shortDescription": "Zebar Multi-Session",
     "category": "Utility",
-    "publisher": "Glzr Software Pte. Ltd.",
+    "publisher": "herlondf",
     "resources": ["resources/*", "../../resources/**/*"],
     "targets": ["deb", "appimage", "msi", "dmg"],
     "windows": {
