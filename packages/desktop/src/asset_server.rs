@@ -104,7 +104,7 @@ pub async fn create_init_url(
 
   let url = tauri::Url::parse_with_params(
     &format!("http://127.0.0.1:{}/__zebar/init", asset_server_port()),
-    &[("token", &token), ("redirect", &redirect)],
+    [("token", &token), ("redirect", &redirect)],
   )?;
 
   Ok(url)
@@ -193,37 +193,60 @@ pub fn normalize_css() -> (ContentType, &'static str) {
 pub async fn serve(
   path: Option<PathBuf>,
   token: ServerToken,
-) -> Option<NamedFile> {
-  // Retrieve access information for the corresponding token.
-  let token_access =
-    { ASSET_SERVER_TOKENS.lock().await.get(&token.0).cloned() }?;
+) -> Result<NamedFile, Status> {
+  // A token that is not in the map means the cookie belongs to a widget
+  // that is no longer open, or to another one that overwrote it.
+  let Some(token_access) =
+    ({ ASSET_SERVER_TOKENS.lock().await.get(&token.0).cloned() })
+  else {
+    error!("Unknown asset server token {:?}.", token.0);
+    return Err(Status::Unauthorized);
+  };
 
   let relative_path = path.unwrap_or("index.html".into());
-  let absolute_path = token_access
+
+  let Ok(absolute_path) = token_access
     .base_dir
     .join(relative_path.clone())
     .canonicalize_pretty()
-    .ok()?;
+  else {
+    error!(
+      "No such asset: {} within {}.",
+      relative_path.display(),
+      token_access.base_dir.display()
+    );
+    return Err(Status::NotFound);
+  };
 
   // Allow access if:
   // - The asset path is within the base directory.
   // - The asset path matches any of the file patterns of the widget pack.
-  if !absolute_path.starts_with(&token_access.base_dir)
-    || !glob_util::is_match(&relative_path, &token_access.file_patterns)
-      .ok()?
-  {
-    tracing::warn!(
-      "Asset path {} is inaccessable with token {:?}.",
+  if !absolute_path.starts_with(&token_access.base_dir) {
+    error!(
+      "Asset {} is outside of {}.",
       absolute_path.display(),
-      token_access
+      token_access.base_dir.display()
     );
 
-    return None;
+    return Err(Status::Forbidden);
   }
 
-  // Attempt to open and serve the requested file. Currently returns HTML
-  // `Content-Type` if not found.
-  NamedFile::open(absolute_path).await.ok()
+  if !glob_util::is_match(&relative_path, &token_access.file_patterns)
+    .unwrap_or(false)
+  {
+    error!(
+      "Asset {} does not match the widget pack's file patterns: {:?}.",
+      relative_path.display(),
+      token_access.file_patterns
+    );
+
+    return Err(Status::Forbidden);
+  }
+
+  NamedFile::open(&absolute_path).await.map_err(|err| {
+    error!("Unable to read {}: {err}.", absolute_path.display());
+    Status::NotFound
+  })
 }
 
 /// Token for identifying which directory is being accessed.
