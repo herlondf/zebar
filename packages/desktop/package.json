@@ -5,8 +5,8 @@
     "build": "pnpm tauri build -- --verbose",
     "dev": "pnpm tauri dev",
     "dev:local": "pnpm dev",
-    "format": "cargo fmt",
-    "lint": "cargo fmt --check",
+    "format": "cargo +nightly fmt",
+    "lint": "cargo +nightly fmt --check && cargo clippy --all-targets --workspace -- -D warnings",
     "tauri": "tauri"
   },
   "dependencies": {},

@@ -18,6 +18,14 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      # Clippy runs on stable, which is what the project builds with.
+      - uses: dtolnay/rust-toolchain@21dc36fb71dd22e3317045c0c31a3f4249868b17
+        with:
+          toolchain: stable
+          components: clippy
+
+      # `rustfmt.toml` sets options that only exist on nightly, so the
+      # formatting check needs a nightly rustfmt alongside it.
       - uses: dtolnay/rust-toolchain@21dc36fb71dd22e3317045c0c31a3f4249868b17
         with:
           toolchain: nightly
