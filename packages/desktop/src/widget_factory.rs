@@ -25,7 +25,6 @@ use crate::common::macos::WindowExtMacOs;
 use crate::common::windows::{remove_app_bar, WindowExtWindows};
 use crate::{
   app_settings::AppSettings,
-  asset_server::create_init_url,
   common::PathExt,
   monitor_state::{Monitor, MonitorState},
   widget_pack::{
@@ -291,14 +290,19 @@ impl WidgetFactory {
         )
       }
 
-      let webview_url = WebviewUrl::External(
-        create_init_url(
+      // Has to happen before the window is built: the webview starts
+      // asking for assets while it is being constructed.
+      crate::asset_protocol::register_widget(
+        &widget_id,
+        &widget_pack.directory_path,
+        widget_pack.include_files(),
+      );
+
+      let webview_url =
+        WebviewUrl::CustomProtocol(crate::asset_protocol::widget_url(
           &widget_pack.directory_path,
           &html_path,
-          widget_pack.include_files(),
-        )
-        .await?,
-      );
+        )?);
 
       let mut state = WidgetState {
         id: widget_id.clone(),
@@ -600,11 +604,10 @@ impl WidgetFactory {
     let state_script =
       format!("window.__ZEBAR_STATE={};", serde_json::to_string(state)?);
 
-    // Both ports are picked at runtime, so that one instance per logged-in
-    // user can run at once. Widgets are told which ones to use.
+    // Only the first logged-in user's GlazeWM gets the well-known port, so
+    // widgets are told which one this session's is on.
     let ports_script = format!(
-      "window.__ZEBAR_PORTS={{assetServer:{},glazewmIpc:{}}};",
-      crate::asset_server::asset_server_port(),
+      "window.__ZEBAR_PORTS={{glazewmIpc:{}}};",
       crate::glazewm_ipc::ipc_port(&self.app_handle),
     );
 
@@ -633,6 +636,8 @@ impl WidgetFactory {
 
           // Remove the widget state.
           let state = widget_states.remove(&widget_id);
+
+          crate::asset_protocol::unregister_widget(&widget_id);
 
           // Ensure appbar space is deallocated on close.
           #[cfg(target_os = "windows")]

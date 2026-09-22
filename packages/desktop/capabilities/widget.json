@@ -7,7 +7,8 @@
     "urls": [
       "http://asset.localhost",
       "asset://localhost",
-      "http://127.0.0.1:*"
+      "zebar://localhost",
+      "http://zebar.localhost"
     ]
   },
   "permissions": [

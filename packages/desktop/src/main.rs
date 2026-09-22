@@ -10,7 +10,7 @@ use tauri::{
   Manager, RunEvent, WebviewUrl, WebviewWindowBuilder,
 };
 use tokio::{sync::mpsc, task};
-use tracing::{error, info, Level};
+use tracing::Level;
 use tracing_subscriber::{
   fmt::{self, writer::MakeWriterExt},
   layer::SubscriberExt,
@@ -20,7 +20,6 @@ use tracing_subscriber::{
 use crate::common::windows::WindowExtWindows;
 use crate::{
   app_settings::AppSettings,
-  asset_server::setup_asset_server,
   cli::{Cli, CliCommand, MonitorType, QueryArgs},
   marketplace_installer::MarketplaceInstaller,
   monitor_state::MonitorState,
@@ -34,7 +33,7 @@ use crate::{
 };
 
 mod app_settings;
-mod asset_server;
+mod asset_protocol;
 mod cli;
 mod commands;
 mod common;
@@ -50,7 +49,7 @@ mod widget_factory;
 mod widget_pack;
 
 #[macro_use]
-extern crate rocket;
+extern crate tracing;
 
 /// Main entry point for the application.
 ///
@@ -70,6 +69,10 @@ async fn main() -> anyhow::Result<()> {
   tauri::async_runtime::set(tokio::runtime::Handle::current());
 
   let app = tauri::Builder::default()
+    .register_uri_scheme_protocol(
+      asset_protocol::SCHEME,
+      |ctx, request| asset_protocol::handle(ctx, request),
+    )
     .setup(|app| {
       task::block_in_place(|| {
         block_on(async move {
@@ -201,9 +204,6 @@ async fn start_app(app: &mut tauri::App, cli: Cli) -> anyhow::Result<()> {
   // the original instance and exit immediately. The CLI command is
   // guaranteed to be one of the open commands here.
   setup_single_instance(app, widget_factory.clone())?;
-
-  // Start the asset server.
-  setup_asset_server().await?;
 
   // Prevent windows from showing up in the dock on MacOS.
   #[cfg(target_os = "macos")]

@@ -32,8 +32,12 @@ setInterval(
   1000 * 60 * 15,
 );
 
+// Widgets are served over Zebar's own scheme, which Windows and Android
+// present as `http://zebar.localhost`. Anything else is a page the widget
+// navigated to, and none of this belongs there.
 if (
-  window.location.host === `127.0.0.1:${window.__ZEBAR_PORTS.assetServer}`
+  window.location.protocol === 'zebar:' ||
+  window.location.hostname === 'zebar.localhost'
 ) {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
