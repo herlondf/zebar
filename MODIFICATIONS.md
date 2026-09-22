@@ -70,6 +70,10 @@ reaching GlazeWM from a widget. The changes live on in this fork instead.
   through `MSAcpi_ThermalZoneTemperature` on Windows, which plenty of
   hardware does not implement; there the provider correctly reports an empty
   list.
+- **Focused window provider**
+  (`packages/desktop/src/providers/focused_window/`) — title, executable and
+  pid of the foreground window, for anyone not running GlazeWM or Komorebi,
+  which were the only way to get this. Windows only.
 - **Branding** (`packages/desktop/tauri.conf.json`,
   `packages/desktop/installer.wxs`) — renamed to `Zebar Multi-Session` with its
   own bundle identifier, publisher and MSI upgrade code, so it installs

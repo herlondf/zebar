@@ -4,8 +4,9 @@ use serde::Deserialize;
 use super::komorebi::KomorebiProviderConfig;
 #[cfg(windows)]
 use super::{
-  audio::AudioProviderConfig, keyboard::KeyboardProviderConfig,
-  media::MediaProviderConfig, systray::SystrayProviderConfig,
+  audio::AudioProviderConfig, focused_window::FocusedWindowProviderConfig,
+  keyboard::KeyboardProviderConfig, media::MediaProviderConfig,
+  systray::SystrayProviderConfig,
 };
 use super::{
   battery::BatteryProviderConfig, command::CommandProviderConfig,
@@ -24,6 +25,9 @@ pub enum ProviderConfig {
   Battery(BatteryProviderConfig),
   Command(CommandProviderConfig),
   Cpu(CpuProviderConfig),
+  #[cfg(windows)]
+  #[serde(rename = "focusedWindow")]
+  FocusedWindow(FocusedWindowProviderConfig),
   Host(HostProviderConfig),
   Http(HttpProviderConfig),
   Ip(IpProviderConfig),

@@ -4,6 +4,8 @@ mod battery;
 mod command;
 mod cpu;
 mod disk;
+#[cfg(windows)]
+mod focused_window;
 mod host;
 mod http;
 mod ip;
