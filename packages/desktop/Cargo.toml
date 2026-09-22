@@ -47,6 +47,9 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uuid = { workspace = true }
 
 [target.'cfg(target_os = "windows")'.dependencies]
+# Loads nvml.dll at runtime, so this builds and runs on machines
+# without an NVIDIA driver; the provider reports the error instead.
+nvml-wrapper = "0.13"
 systray-util = { path = "../../crates/systray-util" }
 komorebi-util = { path = "../../crates/komorebi-util" }
 windows-core = { workspace = true }

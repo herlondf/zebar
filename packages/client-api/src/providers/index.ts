@@ -11,6 +11,7 @@ export * from './komorebi/komorebi-provider-types';
 export * from './media/media-provider-types';
 export * from './command/command-provider-types';
 export * from './focused-window/focused-window-provider-types';
+export * from './gpu/gpu-provider-types';
 export * from './http/http-provider-types';
 export * from './temperature/temperature-provider-types';
 export * from './memory/memory-provider-types';

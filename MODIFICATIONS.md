@@ -74,6 +74,10 @@ reaching GlazeWM from a widget. The changes live on in this fork instead.
   (`packages/desktop/src/providers/focused_window/`) — title, executable and
   pid of the foreground window, for anyone not running GlazeWM or Komorebi,
   which were the only way to get this. Windows only.
+- **GPU provider** (`packages/desktop/src/providers/gpu/`) — usage, memory,
+  temperature, clock and power draw, read through NVIDIA's NVML. NVIDIA only,
+  and `nvml-wrapper` loads the driver library at runtime, so a machine
+  without it builds and runs fine and the provider reports the error instead.
 - **Branding** (`packages/desktop/tauri.conf.json`,
   `packages/desktop/installer.wxs`) — renamed to `Zebar Multi-Session` with its
   own bundle identifier, publisher and MSI upgrade code, so it installs

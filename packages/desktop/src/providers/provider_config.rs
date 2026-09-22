@@ -5,8 +5,8 @@ use super::komorebi::KomorebiProviderConfig;
 #[cfg(windows)]
 use super::{
   audio::AudioProviderConfig, focused_window::FocusedWindowProviderConfig,
-  keyboard::KeyboardProviderConfig, media::MediaProviderConfig,
-  systray::SystrayProviderConfig,
+  gpu::GpuProviderConfig, keyboard::KeyboardProviderConfig,
+  media::MediaProviderConfig, systray::SystrayProviderConfig,
 };
 use super::{
   battery::BatteryProviderConfig, command::CommandProviderConfig,
@@ -28,6 +28,8 @@ pub enum ProviderConfig {
   #[cfg(windows)]
   #[serde(rename = "focusedWindow")]
   FocusedWindow(FocusedWindowProviderConfig),
+  #[cfg(windows)]
+  Gpu(GpuProviderConfig),
   Host(HostProviderConfig),
   Http(HttpProviderConfig),
   Ip(IpProviderConfig),

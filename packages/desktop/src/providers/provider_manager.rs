@@ -14,7 +14,7 @@ use super::komorebi::KomorebiProvider;
 #[cfg(windows)]
 use super::{
   audio::AudioProvider, focused_window::FocusedWindowProvider,
-  keyboard::KeyboardProvider, media::MediaProvider,
+  gpu::GpuProvider, keyboard::KeyboardProvider, media::MediaProvider,
   systray::SystrayProvider,
 };
 use super::{
@@ -337,6 +337,11 @@ impl ProviderManager {
       }),
       RuntimeType::Sync => task::spawn_blocking(move || {
         match config {
+          #[cfg(windows)]
+          ProviderConfig::Gpu(config) => {
+            let mut provider = GpuProvider::new(config, common);
+            provider.start_sync();
+          }
           #[cfg(windows)]
           ProviderConfig::FocusedWindow(config) => {
             let mut provider = FocusedWindowProvider::new(config, common);

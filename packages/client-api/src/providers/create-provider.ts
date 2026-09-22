@@ -33,6 +33,11 @@ import type {
   FocusedWindowProviderConfig,
   FocusedWindowProvider,
 } from './focused-window/focused-window-provider-types';
+import { createGpuProvider } from './gpu/create-gpu-provider';
+import type {
+  GpuProviderConfig,
+  GpuProvider,
+} from './gpu/gpu-provider-types';
 import { createHostProvider } from './host/create-host-provider';
 import { createHttpProvider } from './http/create-http-provider';
 import type {
@@ -99,6 +104,7 @@ export interface ProviderConfigMap {
   date: DateProviderConfig;
   glazewm: GlazeWmProviderConfig;
   focusedWindow: FocusedWindowProviderConfig;
+  gpu: GpuProviderConfig;
   host: HostProviderConfig;
   http: HttpProviderConfig;
   ip: IpProviderConfig;
@@ -121,6 +127,7 @@ export interface ProviderMap {
   date: DateProvider;
   glazewm: GlazeWmProvider;
   focusedWindow: FocusedWindowProvider;
+  gpu: GpuProvider;
   host: HostProvider;
   http: HttpProvider;
   ip: IpProvider;
@@ -170,6 +177,8 @@ export function createProvider<T extends ProviderConfig>(
       return createGlazeWmProvider(config) as any;
     case 'focusedWindow':
       return createFocusedWindowProvider(config) as any;
+    case 'gpu':
+      return createGpuProvider(config) as any;
     case 'host':
       return createHostProvider(config) as any;
     case 'http':
