@@ -18,11 +18,11 @@ use super::{
 };
 use super::{
   battery::BatteryProvider, command::CommandProvider, cpu::CpuProvider,
-  disk::DiskProvider, host::HostProvider, ip::IpProvider,
-  memory::MemoryProvider, network::NetworkProvider,
-  weather::WeatherProvider, Provider, ProviderConfig, ProviderFunction,
-  ProviderFunctionResponse, ProviderFunctionResult, ProviderOutput,
-  RuntimeType,
+  disk::DiskProvider, host::HostProvider, http::HttpProvider,
+  ip::IpProvider, memory::MemoryProvider, network::NetworkProvider,
+  temperature::TemperatureProvider, weather::WeatherProvider, Provider,
+  ProviderConfig, ProviderFunction, ProviderFunctionResponse,
+  ProviderFunctionResult, ProviderOutput, RuntimeType,
 };
 use crate::{
   providers::command::CommandProviderConfig,
@@ -289,6 +289,7 @@ impl ProviderManager {
   ) -> anyhow::Result<(task::JoinHandle<()>, RuntimeType)> {
     let runtime_type = match config {
       ProviderConfig::Command(..)
+      | ProviderConfig::Http(..)
       | ProviderConfig::Ip(..)
       | ProviderConfig::Weather(..) => RuntimeType::Async,
       #[cfg(any(target_os = "macos", windows))]
@@ -304,6 +305,10 @@ impl ProviderManager {
         match config {
           ProviderConfig::Command(config) => {
             let mut provider = CommandProvider::new(config, common);
+            provider.start_async().await;
+          }
+          ProviderConfig::Http(config) => {
+            let mut provider = HttpProvider::new(config, common);
             provider.start_async().await;
           }
           ProviderConfig::Ip(config) => {
@@ -351,6 +356,10 @@ impl ProviderManager {
           #[cfg(windows)]
           ProviderConfig::Media(config) => {
             let mut provider = MediaProvider::new(config, common);
+            provider.start_sync();
+          }
+          ProviderConfig::Temperature(config) => {
+            let mut provider = TemperatureProvider::new(config, common);
             provider.start_sync();
           }
           ProviderConfig::Memory(config) => {

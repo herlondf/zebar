@@ -3,10 +3,12 @@ use std::path::PathBuf;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use shell_util::{CommandOptions, Shell};
-use tokio::time::{self, Duration};
 
-use crate::providers::{
-  CommonProviderState, Provider, ProviderInputMsg, RuntimeType,
+use crate::{
+  common::AsyncInterval,
+  providers::{
+    CommonProviderState, Provider, ProviderInputMsg, RuntimeType,
+  },
 };
 
 #[derive(Clone, Debug, Deserialize)]
@@ -87,8 +89,7 @@ impl Provider for CommandProvider {
   }
 
   async fn start_async(&mut self) {
-    let mut interval =
-      time::interval(Duration::from_millis(self.config.refresh_interval));
+    let mut interval = AsyncInterval::new(self.config.refresh_interval);
 
     loop {
       tokio::select! {

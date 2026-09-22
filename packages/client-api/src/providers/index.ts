@@ -10,6 +10,8 @@ export * from './disk/disk-provider-types';
 export * from './komorebi/komorebi-provider-types';
 export * from './media/media-provider-types';
 export * from './command/command-provider-types';
+export * from './http/http-provider-types';
+export * from './temperature/temperature-provider-types';
 export * from './memory/memory-provider-types';
 export * from './network/network-provider-types';
 export * from './weather/weather-provider-types';

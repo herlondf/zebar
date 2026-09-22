@@ -9,8 +9,9 @@ use super::{
 };
 use super::{
   battery::BatteryOutput, command::CommandOutput, cpu::CpuOutput,
-  disk::DiskOutput, host::HostOutput, ip::IpOutput, memory::MemoryOutput,
-  network::NetworkOutput, weather::WeatherOutput,
+  disk::DiskOutput, host::HostOutput, http::HttpOutput, ip::IpOutput,
+  memory::MemoryOutput, network::NetworkOutput,
+  temperature::TemperatureOutput, weather::WeatherOutput,
 };
 
 /// Implements `From<T>` for `ProviderOutput` for each given variant.
@@ -39,6 +40,7 @@ pub enum ProviderOutput {
   Command(CommandOutput),
   Cpu(CpuOutput),
   Host(HostOutput),
+  Http(HttpOutput),
   Ip(IpOutput),
   #[cfg(any(target_os = "macos", windows))]
   Komorebi(KomorebiOutput),
@@ -49,6 +51,7 @@ pub enum ProviderOutput {
   Network(NetworkOutput),
   #[cfg(windows)]
   Systray(SystrayOutput),
+  Temperature(TemperatureOutput),
   Weather(WeatherOutput),
   #[cfg(windows)]
   Keyboard(KeyboardOutput),
@@ -59,10 +62,12 @@ impl_provider_output! {
   Command(CommandOutput),
   Cpu(CpuOutput),
   Host(HostOutput),
+  Http(HttpOutput),
   Ip(IpOutput),
   Memory(MemoryOutput),
   Disk(DiskOutput),
   Network(NetworkOutput),
+  Temperature(TemperatureOutput),
   Weather(WeatherOutput)
 }
 

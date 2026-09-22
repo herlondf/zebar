@@ -10,8 +10,9 @@ use super::{
 use super::{
   battery::BatteryProviderConfig, command::CommandProviderConfig,
   cpu::CpuProviderConfig, disk::DiskProviderConfig,
-  host::HostProviderConfig, ip::IpProviderConfig,
-  memory::MemoryProviderConfig, network::NetworkProviderConfig,
+  host::HostProviderConfig, http::HttpProviderConfig,
+  ip::IpProviderConfig, memory::MemoryProviderConfig,
+  network::NetworkProviderConfig, temperature::TemperatureProviderConfig,
   weather::WeatherProviderConfig,
 };
 
@@ -24,6 +25,7 @@ pub enum ProviderConfig {
   Command(CommandProviderConfig),
   Cpu(CpuProviderConfig),
   Host(HostProviderConfig),
+  Http(HttpProviderConfig),
   Ip(IpProviderConfig),
   #[cfg(any(target_os = "macos", windows))]
   Komorebi(KomorebiProviderConfig),
@@ -34,6 +36,7 @@ pub enum ProviderConfig {
   Network(NetworkProviderConfig),
   #[cfg(windows)]
   Systray(SystrayProviderConfig),
+  Temperature(TemperatureProviderConfig),
   Weather(WeatherProviderConfig),
   #[cfg(windows)]
   Keyboard(KeyboardProviderConfig),

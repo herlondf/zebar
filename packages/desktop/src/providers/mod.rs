@@ -5,6 +5,7 @@ mod command;
 mod cpu;
 mod disk;
 mod host;
+mod http;
 mod ip;
 #[cfg(windows)]
 mod keyboard;
@@ -21,6 +22,7 @@ mod provider_manager;
 mod provider_output;
 #[cfg(windows)]
 mod systray;
+mod temperature;
 mod weather;
 
 pub use provider::*;

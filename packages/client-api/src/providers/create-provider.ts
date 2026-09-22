@@ -29,6 +29,11 @@ import type {
   GlazeWmProvider,
 } from './glazewm/glazewm-provider-types';
 import { createHostProvider } from './host/create-host-provider';
+import { createHttpProvider } from './http/create-http-provider';
+import type {
+  HttpProviderConfig,
+  HttpProvider,
+} from './http/http-provider-types';
 import type {
   HostProviderConfig,
   HostProvider,
@@ -60,6 +65,11 @@ import type {
   NetworkProviderConfig,
   NetworkProvider,
 } from './network/network-provider-types';
+import { createTemperatureProvider } from './temperature/create-temperature-provider';
+import type {
+  TemperatureProviderConfig,
+  TemperatureProvider,
+} from './temperature/temperature-provider-types';
 import { createWeatherProvider } from './weather/create-weather-provider';
 import type {
   WeatherProviderConfig,
@@ -84,11 +94,13 @@ export interface ProviderConfigMap {
   date: DateProviderConfig;
   glazewm: GlazeWmProviderConfig;
   host: HostProviderConfig;
+  http: HttpProviderConfig;
   ip: IpProviderConfig;
   komorebi: KomorebiProviderConfig;
   media: MediaProviderConfig;
   memory: MemoryProviderConfig;
   network: NetworkProviderConfig;
+  temperature: TemperatureProviderConfig;
   weather: WeatherProviderConfig;
   keyboard: KeyboardProviderConfig;
   disk: DiskProviderConfig;
@@ -103,11 +115,13 @@ export interface ProviderMap {
   date: DateProvider;
   glazewm: GlazeWmProvider;
   host: HostProvider;
+  http: HttpProvider;
   ip: IpProvider;
   komorebi: KomorebiProvider;
   media: MediaProvider;
   memory: MemoryProvider;
   network: NetworkProvider;
+  temperature: TemperatureProvider;
   weather: WeatherProvider;
   keyboard: KeyboardProvider;
   disk: DiskProvider;
@@ -149,6 +163,8 @@ export function createProvider<T extends ProviderConfig>(
       return createGlazeWmProvider(config) as any;
     case 'host':
       return createHostProvider(config) as any;
+    case 'http':
+      return createHttpProvider(config) as any;
     case 'ip':
       return createIpProvider(config) as any;
     case 'komorebi':
@@ -159,6 +175,8 @@ export function createProvider<T extends ProviderConfig>(
       return createMemoryProvider(config) as any;
     case 'network':
       return createNetworkProvider(config) as any;
+    case 'temperature':
+      return createTemperatureProvider(config) as any;
     case 'weather':
       return createWeatherProvider(config) as any;
     case 'keyboard':

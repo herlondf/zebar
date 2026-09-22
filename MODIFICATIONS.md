@@ -60,6 +60,16 @@ reaching GlazeWM from a widget. The changes live on in this fork instead.
   code. It is checked against the same `privileges.shellCommands` that
   `shellExec` is held to, before the emission cache is consulted, so a widget
   without the privilege cannot subscribe to one another widget started.
+- **HTTP provider** (`packages/desktop/src/providers/http/`) — polls a URL
+  and hands the widget the status, the body, and the body parsed as JSON
+  when it is JSON. Adds no capability a widget did not already have through
+  `fetch`; what it adds is the interval and the shared emission cache.
+- **Temperature provider** (`packages/desktop/src/providers/temperature/`) —
+  every sensor the OS reports, plus the hottest one so a bar that wants a
+  single number needs to know no labels. Note that `sysinfo` reads these
+  through `MSAcpi_ThermalZoneTemperature` on Windows, which plenty of
+  hardware does not implement; there the provider correctly reports an empty
+  list.
 - **Branding** (`packages/desktop/tauri.conf.json`,
   `packages/desktop/installer.wxs`) — renamed to `Zebar Multi-Session` with its
   own bundle identifier, publisher and MSI upgrade code, so it installs
