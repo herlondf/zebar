@@ -71,7 +71,8 @@ pub async fn setup_asset_server() -> anyhow::Result<()> {
 
   let rocket = rocket::build()
     .configure(rocket::Config::figment().merge(("port", port)))
-    .mount("/", routes![sw_js, client_api, normalize_css, init, serve]);
+    .mount("/", routes![sw_js, client_api, normalize_css, init, serve])
+    .register("/", catchers![asset_error]);
 
   // Test if the server can start (this doesn't block).
   let rocket = rocket.ignite().await.map_err(|err| {
@@ -260,6 +261,27 @@ pub async fn serve(
     error!("Unable to read {}: {err}.", absolute_path.display());
     Status::NotFound
   })
+}
+
+/// Answers a failed asset request in plain text.
+///
+/// Rocket's default catcher writes an HTML page, which is a confusing
+/// thing to hand back to a widget that asked for a stylesheet or an image.
+#[catch(default)]
+pub fn asset_error(
+  status: Status,
+  _: &Request<'_>,
+) -> (Status, (ContentType, String)) {
+  (
+    status,
+    (
+      ContentType::Plain,
+      format!(
+        "{status}
+"
+      ),
+    ),
+  )
 }
 
 /// Token for identifying which directory is being accessed.
