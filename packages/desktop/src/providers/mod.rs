@@ -1,11 +1,15 @@
 #[cfg(windows)]
 mod audio;
 mod battery;
+#[cfg(windows)]
+mod bluetooth;
 mod command;
 mod cpu;
 mod disk;
 #[cfg(windows)]
 mod focused_window;
+#[cfg(windows)]
+mod gpu;
 mod host;
 mod http;
 mod ip;

@@ -13,7 +13,9 @@ use tracing::info;
 use super::komorebi::KomorebiProvider;
 #[cfg(windows)]
 use super::{
-  audio::AudioProvider, focused_window::FocusedWindowProvider,
+  audio::AudioProvider, bluetooth::BluetoothProvider,
+  focused_window::FocusedWindowProvider,
+  gpu::GpuProvider,
   keyboard::KeyboardProvider, media::MediaProvider,
   systray::SystrayProvider,
 };
@@ -337,6 +339,16 @@ impl ProviderManager {
       }),
       RuntimeType::Sync => task::spawn_blocking(move || {
         match config {
+          #[cfg(windows)]
+          ProviderConfig::Bluetooth(config) => {
+            let mut provider = BluetoothProvider::new(config, common);
+            provider.start_sync();
+          }
+          #[cfg(windows)]
+          ProviderConfig::Gpu(config) => {
+            let mut provider = GpuProvider::new(config, common);
+            provider.start_sync();
+          }
           #[cfg(windows)]
           ProviderConfig::FocusedWindow(config) => {
             let mut provider = FocusedWindowProvider::new(config, common);

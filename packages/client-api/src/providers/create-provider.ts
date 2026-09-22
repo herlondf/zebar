@@ -13,6 +13,11 @@ import type {
   CommandProviderConfig,
   CommandProvider,
 } from './command/command-provider-types';
+import { createBluetoothProvider } from './bluetooth/create-bluetooth-provider';
+import type {
+  BluetoothProviderConfig,
+  BluetoothProvider,
+} from './bluetooth/bluetooth-provider-types';
 import { createCpuProvider } from './cpu/create-cpu-provider';
 import type {
   CpuProviderConfig,
@@ -33,6 +38,11 @@ import type {
   FocusedWindowProviderConfig,
   FocusedWindowProvider,
 } from './focused-window/focused-window-provider-types';
+import { createGpuProvider } from './gpu/create-gpu-provider';
+import type {
+  GpuProviderConfig,
+  GpuProvider,
+} from './gpu/gpu-provider-types';
 import { createHostProvider } from './host/create-host-provider';
 import { createHttpProvider } from './http/create-http-provider';
 import type {
@@ -98,7 +108,9 @@ export interface ProviderConfigMap {
   cpu: CpuProviderConfig;
   date: DateProviderConfig;
   glazewm: GlazeWmProviderConfig;
+  bluetooth: BluetoothProviderConfig;
   focusedWindow: FocusedWindowProviderConfig;
+  gpu: GpuProviderConfig;
   host: HostProviderConfig;
   http: HttpProviderConfig;
   ip: IpProviderConfig;
@@ -120,7 +132,9 @@ export interface ProviderMap {
   cpu: CpuProvider;
   date: DateProvider;
   glazewm: GlazeWmProvider;
+  bluetooth: BluetoothProvider;
   focusedWindow: FocusedWindowProvider;
+  gpu: GpuProvider;
   host: HostProvider;
   http: HttpProvider;
   ip: IpProvider;
@@ -168,8 +182,12 @@ export function createProvider<T extends ProviderConfig>(
       return createDateProvider(config) as any;
     case 'glazewm':
       return createGlazeWmProvider(config) as any;
+    case 'bluetooth':
+      return createBluetoothProvider(config) as any;
     case 'focusedWindow':
       return createFocusedWindowProvider(config) as any;
+    case 'gpu':
+      return createGpuProvider(config) as any;
     case 'host':
       return createHostProvider(config) as any;
     case 'http':
