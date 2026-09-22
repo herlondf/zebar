@@ -56,7 +56,8 @@ struct TokenAccess {
 ///
 /// Rocket needs the port up front, so the listener used to claim it is
 /// dropped again before Rocket binds. Nothing else is expected to grab a
-/// localhost port in that window.
+/// localhost port in that window, and Rocket 0.5 offers no way to hand it
+/// an already-bound listener; that arrives in 0.6.
 fn pick_port() -> anyhow::Result<u16> {
   let listener =
     TcpListener::bind(("127.0.0.1", DEFAULT_ASSET_SERVER_PORT))
