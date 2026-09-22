@@ -55,6 +55,11 @@ reaching GlazeWM from a widget. The changes live on in this fork instead.
   instance running in this session. A widget importing the client API
   locally therefore reaches the right GlazeWM with no `window.WebSocket`
   patching. The patch stays for widgets that still import from a CDN.
+- **Command provider** (`packages/desktop/src/providers/command/`) — runs a
+  program on an interval and hands the widget its stdout, stderr and exit
+  code. It is checked against the same `privileges.shellCommands` that
+  `shellExec` is held to, before the emission cache is consulted, so a widget
+  without the privilege cannot subscribe to one another widget started.
 - **Branding** (`packages/desktop/tauri.conf.json`,
   `packages/desktop/installer.wxs`) — renamed to `Zebar Multi-Session` with its
   own bundle identifier, publisher and MSI upgrade code, so it installs

@@ -8,6 +8,11 @@ import type {
   BatteryProviderConfig,
   BatteryProvider,
 } from './battery/battery-provider-types';
+import { createCommandProvider } from './command/create-command-provider';
+import type {
+  CommandProviderConfig,
+  CommandProvider,
+} from './command/command-provider-types';
 import { createCpuProvider } from './cpu/create-cpu-provider';
 import type {
   CpuProviderConfig,
@@ -74,6 +79,7 @@ import type {
 export interface ProviderConfigMap {
   audio: AudioProviderConfig;
   battery: BatteryProviderConfig;
+  command: CommandProviderConfig;
   cpu: CpuProviderConfig;
   date: DateProviderConfig;
   glazewm: GlazeWmProviderConfig;
@@ -92,6 +98,7 @@ export interface ProviderConfigMap {
 export interface ProviderMap {
   audio: AudioProvider;
   battery: BatteryProvider;
+  command: CommandProvider;
   cpu: CpuProvider;
   date: DateProvider;
   glazewm: GlazeWmProvider;
@@ -132,6 +139,8 @@ export function createProvider<T extends ProviderConfig>(
       return createAudioProvider(config) as any;
     case 'battery':
       return createBatteryProvider(config) as any;
+    case 'command':
+      return createCommandProvider(config) as any;
     case 'cpu':
       return createCpuProvider(config) as any;
     case 'date':

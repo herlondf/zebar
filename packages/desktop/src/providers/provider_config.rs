@@ -8,10 +8,11 @@ use super::{
   media::MediaProviderConfig, systray::SystrayProviderConfig,
 };
 use super::{
-  battery::BatteryProviderConfig, cpu::CpuProviderConfig,
-  disk::DiskProviderConfig, host::HostProviderConfig,
-  ip::IpProviderConfig, memory::MemoryProviderConfig,
-  network::NetworkProviderConfig, weather::WeatherProviderConfig,
+  battery::BatteryProviderConfig, command::CommandProviderConfig,
+  cpu::CpuProviderConfig, disk::DiskProviderConfig,
+  host::HostProviderConfig, ip::IpProviderConfig,
+  memory::MemoryProviderConfig, network::NetworkProviderConfig,
+  weather::WeatherProviderConfig,
 };
 
 #[derive(Deserialize, Debug)]
@@ -20,6 +21,7 @@ pub enum ProviderConfig {
   #[cfg(windows)]
   Audio(AudioProviderConfig),
   Battery(BatteryProviderConfig),
+  Command(CommandProviderConfig),
   Cpu(CpuProviderConfig),
   Host(HostProviderConfig),
   Ip(IpProviderConfig),

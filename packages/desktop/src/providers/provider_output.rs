@@ -8,8 +8,8 @@ use super::{
   systray::SystrayOutput,
 };
 use super::{
-  battery::BatteryOutput, cpu::CpuOutput, disk::DiskOutput,
-  host::HostOutput, ip::IpOutput, memory::MemoryOutput,
+  battery::BatteryOutput, command::CommandOutput, cpu::CpuOutput,
+  disk::DiskOutput, host::HostOutput, ip::IpOutput, memory::MemoryOutput,
   network::NetworkOutput, weather::WeatherOutput,
 };
 
@@ -36,6 +36,7 @@ pub enum ProviderOutput {
   #[cfg(windows)]
   Audio(AudioOutput),
   Battery(BatteryOutput),
+  Command(CommandOutput),
   Cpu(CpuOutput),
   Host(HostOutput),
   Ip(IpOutput),
@@ -55,6 +56,7 @@ pub enum ProviderOutput {
 
 impl_provider_output! {
   Battery(BatteryOutput),
+  Command(CommandOutput),
   Cpu(CpuOutput),
   Host(HostOutput),
   Ip(IpOutput),

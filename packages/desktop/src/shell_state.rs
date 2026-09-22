@@ -12,7 +12,9 @@ use shell_util::{
 use tauri::{AppHandle, Emitter};
 use tokio::sync::{mpsc, oneshot};
 
-use crate::widget_factory::WidgetFactory;
+use crate::{
+  widget_factory::WidgetFactory, widget_pack::WidgetPrivileges,
+};
 
 /// Handle for managing a spawned child process.
 #[derive(Debug)]
@@ -215,43 +217,57 @@ impl ShellState {
         format!("Widget with ID '{widget_id}' not found.")
       })?;
 
-    let args_str: String = args.into();
-    let shell_privileges = widget.config.privileges.shell_commands;
-
-    // Check if any privilege matches the program.
-    let program_privileges: Vec<_> = shell_privileges
-      .iter()
-      .filter(|privilege| privilege.program == program)
-      .collect();
-
-    if program_privileges.is_empty() {
-      bail!("No shell privileges found for program '{program}'.");
-    }
-
-    for privilege in program_privileges {
-      // Allow empty args if args regex is also empty.
-      if privilege.args_regex.is_empty() {
-        if args_str.is_empty() {
-          return Ok(());
-        }
-
-        continue;
-      }
-
-      // Check if args match the regex pattern.
-      if let Ok(re) = regex::Regex::new(&privilege.args_regex) {
-        if re.is_match(&args_str) {
-          return Ok(());
-        }
-      }
-    }
-
-    bail!(
-      "Arguments '{}' are not allowed for program '{}'. Check widget's shell privileges.",
-      args_str,
-      program
+    check_shell_privilege(
+      &widget.config.privileges,
+      program,
+      &String::from(args),
     )
   }
+}
+
+/// Validates a program and its arguments against a widget's shell
+/// privileges.
+///
+/// Lives outside `ShellState` because the command provider runs the same
+/// check, and running a program through a provider must not be a way
+/// around the privileges that `shellExec` is held to.
+pub fn check_shell_privilege(
+  privileges: &WidgetPrivileges,
+  program: &str,
+  args: &str,
+) -> anyhow::Result<()> {
+  // Check if any privilege matches the program.
+  let program_privileges: Vec<_> = privileges
+    .shell_commands
+    .iter()
+    .filter(|privilege| privilege.program == program)
+    .collect();
+
+  if program_privileges.is_empty() {
+    bail!("No shell privileges found for program '{program}'.");
+  }
+
+  for privilege in program_privileges {
+    // Allow empty args if args regex is also empty.
+    if privilege.args_regex.is_empty() {
+      if args.is_empty() {
+        return Ok(());
+      }
+
+      continue;
+    }
+
+    // Check if args match the regex pattern.
+    if let Ok(re) = regex::Regex::new(&privilege.args_regex) {
+      if re.is_match(args) {
+        return Ok(());
+      }
+    }
+  }
+
+  bail!(
+    "Arguments '{args}' are not allowed for program '{program}'. Check widget's shell privileges."
+  )
 }
 
 impl Drop for ShellState {

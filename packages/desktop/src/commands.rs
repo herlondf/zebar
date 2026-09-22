@@ -166,10 +166,11 @@ pub async fn delete_widget_config(
 pub async fn listen_provider(
   config_hash: String,
   config: ProviderConfig,
+  window: Window,
   provider_manager: State<'_, Arc<ProviderManager>>,
 ) -> anyhow::Result<(), String> {
   provider_manager
-    .create(config_hash, config)
+    .create(window.label(), config_hash, config)
     .await
     .map_err(|err| err.to_string())
 }

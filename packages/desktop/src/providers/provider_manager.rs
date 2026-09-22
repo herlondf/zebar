@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Context;
 use serde::{ser::SerializeStruct, Serialize};
-use tauri::{AppHandle, Emitter};
+use tauri::{AppHandle, Emitter, Manager};
 use tokio::{
   sync::{mpsc, oneshot, Mutex},
   task,
@@ -17,11 +17,16 @@ use super::{
   systray::SystrayProvider,
 };
 use super::{
-  battery::BatteryProvider, cpu::CpuProvider, disk::DiskProvider,
-  host::HostProvider, ip::IpProvider, memory::MemoryProvider,
-  network::NetworkProvider, weather::WeatherProvider, Provider,
-  ProviderConfig, ProviderFunction, ProviderFunctionResponse,
-  ProviderFunctionResult, ProviderOutput, RuntimeType,
+  battery::BatteryProvider, command::CommandProvider, cpu::CpuProvider,
+  disk::DiskProvider, host::HostProvider, ip::IpProvider,
+  memory::MemoryProvider, network::NetworkProvider,
+  weather::WeatherProvider, Provider, ProviderConfig, ProviderFunction,
+  ProviderFunctionResponse, ProviderFunctionResult, ProviderOutput,
+  RuntimeType,
+};
+use crate::{
+  providers::command::CommandProviderConfig,
+  shell_state::check_shell_privilege, widget_factory::WidgetFactory,
 };
 
 /// Common fields for a provider.
@@ -175,9 +180,16 @@ impl ProviderManager {
   /// Creates a provider with the given config.
   pub async fn create(
     &self,
+    widget_id: &str,
     config_hash: String,
     config: ProviderConfig,
   ) -> anyhow::Result<()> {
+    // Checked before the cache is consulted, so that a widget without the
+    // privilege cannot subscribe to a provider another widget started.
+    if let ProviderConfig::Command(config) = &config {
+      self.check_command_privilege(widget_id, config).await?;
+    }
+
     // If a provider with the given config already exists, re-emit its
     // latest emission and return early.
     {
@@ -239,6 +251,35 @@ impl ProviderManager {
     Ok(())
   }
 
+  /// Checks a command provider against the widget's shell privileges.
+  ///
+  /// Running a program through a provider must be held to the same
+  /// privileges as running it through `shellExec`, or it is a way around
+  /// them.
+  async fn check_command_privilege(
+    &self,
+    widget_id: &str,
+    config: &CommandProviderConfig,
+  ) -> anyhow::Result<()> {
+    let widget_factory = self.app_handle.state::<Arc<WidgetFactory>>();
+
+    let widget = widget_factory
+      .state_by_id(widget_id)
+      .await
+      .with_context(|| {
+        format!("Widget with ID '{widget_id}' not found.")
+      })?;
+
+    check_shell_privilege(
+      &widget.config.privileges,
+      &config.program,
+      &config.args.join(" "),
+    )
+    .inspect_err(|err| {
+      error!("Command provider refused for widget {widget_id}: {err}");
+    })
+  }
+
   /// Creates a new provider instance.
   fn create_instance(
     &self,
@@ -247,9 +288,9 @@ impl ProviderManager {
     common: CommonProviderState,
   ) -> anyhow::Result<(task::JoinHandle<()>, RuntimeType)> {
     let runtime_type = match config {
-      ProviderConfig::Ip(..) | ProviderConfig::Weather(..) => {
-        RuntimeType::Async
-      }
+      ProviderConfig::Command(..)
+      | ProviderConfig::Ip(..)
+      | ProviderConfig::Weather(..) => RuntimeType::Async,
       #[cfg(any(target_os = "macos", windows))]
       ProviderConfig::Komorebi(..) => RuntimeType::Async,
       #[cfg(windows)]
@@ -261,6 +302,10 @@ impl ProviderManager {
     let task_handle = match &runtime_type {
       RuntimeType::Async => task::spawn(async move {
         match config {
+          ProviderConfig::Command(config) => {
+            let mut provider = CommandProvider::new(config, common);
+            provider.start_async().await;
+          }
           ProviderConfig::Ip(config) => {
             let mut provider = IpProvider::new(config, common);
             provider.start_async().await;

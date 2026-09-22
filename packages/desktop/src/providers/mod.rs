@@ -1,6 +1,7 @@
 #[cfg(windows)]
 mod audio;
 mod battery;
+mod command;
 mod cpu;
 mod disk;
 mod host;
